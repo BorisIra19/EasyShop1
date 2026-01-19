@@ -129,6 +129,52 @@ const swaggerOptions = {
             },
           },
         },
+        Cart: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+              description: 'Cart ID',
+            },
+            userId: {
+              type: 'string',
+              description: 'User ID',
+            },
+            items: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/CartItem',
+              },
+              description: 'List of cart items',
+            },
+          },
+        },
+        AddCartItemRequest: {
+          type: 'object',
+          required: ['productId', 'quantity'],
+          properties: {
+            productId: {
+              type: 'string',
+              description: 'Product ID to add to cart',
+            },
+            quantity: {
+              type: 'number',
+              minimum: 1,
+              description: 'Quantity of the product',
+            },
+          },
+        },
+        UpdateCartItemRequest: {
+          type: 'object',
+          required: ['quantity'],
+          properties: {
+            quantity: {
+              type: 'number',
+              minimum: 1,
+              description: 'New quantity for the cart item',
+            },
+          },
+        },
         Error: {
           type: 'object',
           properties: {

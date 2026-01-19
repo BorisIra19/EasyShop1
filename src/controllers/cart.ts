@@ -28,6 +28,13 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
     const { productId, quantity } = req.body;
     const userId = req.user?._id;
 
+    // Check if product exists
+    const Product = require('../models/Product').default;
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
     let cart = await Cart.findOne({ userId });
     if (!cart) {
       cart = new Cart({ userId, items: [] });
@@ -42,7 +49,7 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
 
     await cart.save();
     await cart.populate('items.productId', 'name price');
-    res.json(cart);
+    res.status(201).json(cart);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

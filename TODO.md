@@ -1,19 +1,6 @@
-# TODO: Add Swagger Documentation for All Endpoints
+# TODO: Fix Swagger Documentation
 
-## Completed
-- [x] Install swagger-jsdoc and swagger-ui-express
-
-## In Progress
-- [ ] Set up Swagger configuration in app.ts
-- [ ] Add Swagger annotations to auth routes
-- [ ] Add Swagger annotations to user routes
-- [ ] Add Swagger annotations to category routes
-- [ ] Add Swagger annotations to product routes
-- [ ] Add Swagger annotations to cart routes
-- [ ] Test Swagger UI at /api-docs
-
-## Notes
-- All endpoints need proper Swagger JSDoc comments
-- Include request/response schemas
-- Add security definitions for JWT authentication
-- Document error responses
+## Tasks
+- [x] Add Swagger documentation for POST /api/auth/login in src/routes/auth.ts
+- [x] Add Swagger documentation for POST /api/cart/items in src/routes/cart.ts
+- [x] Verify Swagger UI shows all endpoints correctly
