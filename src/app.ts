@@ -11,6 +11,7 @@ import userRoutes from './routes/users';
 import categoryRoutes from './routes/categories';
 import productRoutes from './routes/products';
 import cartRoutes from './routes/cart';
+import { customerRouter, adminRouter } from './routes/orders';
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
@@ -175,6 +176,117 @@ const swaggerOptions = {
             },
           },
         },
+        OrderItem: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+              description: 'Order item ID',
+            },
+            productId: {
+              type: 'string',
+              description: 'Product ID',
+            },
+            productName: {
+              type: 'string',
+              description: 'Product name at time of order',
+            },
+            productPrice: {
+              type: 'number',
+              description: 'Product price at time of order',
+            },
+            quantity: {
+              type: 'number',
+              description: 'Ordered quantity',
+            },
+            totalPrice: {
+              type: 'number',
+              description: 'Total price for this item',
+            },
+          },
+        },
+        Order: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+              description: 'Order ID',
+            },
+            userId: {
+              type: 'string',
+              description: 'User ID who placed the order',
+            },
+            items: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/OrderItem',
+              },
+              description: 'List of ordered items',
+            },
+            totalPrice: {
+              type: 'number',
+              description: 'Total order price',
+            },
+            status: {
+              type: 'string',
+              enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+              description: 'Order status',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Order creation timestamp',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Order last update timestamp',
+            },
+          },
+        },
+        OrdersResponse: {
+          type: 'object',
+          properties: {
+            orders: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/Order',
+              },
+            },
+            pagination: {
+              type: 'object',
+              properties: {
+                page: {
+                  type: 'number',
+                  description: 'Current page',
+                },
+                limit: {
+                  type: 'number',
+                  description: 'Items per page',
+                },
+                total: {
+                  type: 'number',
+                  description: 'Total orders',
+                },
+                pages: {
+                  type: 'number',
+                  description: 'Total pages',
+                },
+              },
+            },
+          },
+        },
+        UpdateOrderStatusRequest: {
+          type: 'object',
+          required: ['status'],
+          properties: {
+            status: {
+              type: 'string',
+              enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+              description: 'New order status',
+            },
+          },
+        },
         Error: {
           type: 'object',
           properties: {
@@ -214,6 +326,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/orders', customerRouter);
+app.use('/api/admin/orders', adminRouter);
 
 // Health check
 app.get('/health', (req, res) => {

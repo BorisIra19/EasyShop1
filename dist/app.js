@@ -15,6 +15,7 @@ const users_1 = __importDefault(require("./routes/users"));
 const categories_1 = __importDefault(require("./routes/categories"));
 const products_1 = __importDefault(require("./routes/products"));
 const cart_1 = __importDefault(require("./routes/cart"));
+const orders_1 = __importDefault(require("./routes/orders"));
 const errorHandler_1 = require("./middlewares/errorHandler");
 const app = (0, express_1.default)();
 // Swagger configuration
@@ -177,6 +178,117 @@ const swaggerOptions = {
                         },
                     },
                 },
+                OrderItem: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            description: 'Order item ID',
+                        },
+                        productId: {
+                            type: 'string',
+                            description: 'Product ID',
+                        },
+                        productName: {
+                            type: 'string',
+                            description: 'Product name at time of order',
+                        },
+                        productPrice: {
+                            type: 'number',
+                            description: 'Product price at time of order',
+                        },
+                        quantity: {
+                            type: 'number',
+                            description: 'Ordered quantity',
+                        },
+                        totalPrice: {
+                            type: 'number',
+                            description: 'Total price for this item',
+                        },
+                    },
+                },
+                Order: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            description: 'Order ID',
+                        },
+                        userId: {
+                            type: 'string',
+                            description: 'User ID who placed the order',
+                        },
+                        items: {
+                            type: 'array',
+                            items: {
+                                $ref: '#/components/schemas/OrderItem',
+                            },
+                            description: 'List of ordered items',
+                        },
+                        totalPrice: {
+                            type: 'number',
+                            description: 'Total order price',
+                        },
+                        status: {
+                            type: 'string',
+                            enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+                            description: 'Order status',
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Order creation timestamp',
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Order last update timestamp',
+                        },
+                    },
+                },
+                OrdersResponse: {
+                    type: 'object',
+                    properties: {
+                        orders: {
+                            type: 'array',
+                            items: {
+                                $ref: '#/components/schemas/Order',
+                            },
+                        },
+                        pagination: {
+                            type: 'object',
+                            properties: {
+                                page: {
+                                    type: 'number',
+                                    description: 'Current page',
+                                },
+                                limit: {
+                                    type: 'number',
+                                    description: 'Items per page',
+                                },
+                                total: {
+                                    type: 'number',
+                                    description: 'Total orders',
+                                },
+                                pages: {
+                                    type: 'number',
+                                    description: 'Total pages',
+                                },
+                            },
+                        },
+                    },
+                },
+                UpdateOrderStatusRequest: {
+                    type: 'object',
+                    required: ['status'],
+                    properties: {
+                        status: {
+                            type: 'string',
+                            enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+                            description: 'New order status',
+                        },
+                    },
+                },
                 Error: {
                     type: 'object',
                     properties: {
@@ -211,6 +323,7 @@ app.use('/api/users', users_1.default);
 app.use('/api/categories', categories_1.default);
 app.use('/api/products', products_1.default);
 app.use('/api/cart', cart_1.default);
+app.use('/api/orders', orders_1.default);
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });

@@ -1,6 +1,14 @@
-# TODO: Fix Swagger Documentation
+# Task 5: Orders Management Implementation
 
-## Tasks
-- [x] Add Swagger documentation for POST /api/auth/login in src/routes/auth.ts
-- [x] Add Swagger documentation for POST /api/cart/items in src/routes/cart.ts
-- [x] Verify Swagger UI shows all endpoints correctly
+## Steps to Complete:
+- [x] Create Order model (src/models/Order.ts)
+- [x] Create Order controller (src/controllers/order.ts) with methods:
+  - placeOrder (customer)
+  - getUserOrders (customer)
+  - getUserOrderById (customer)
+  - cancelOrder (customer)
+  - getAllOrders (admin)
+  - updateOrderStatus (admin)
+- [x] Create Order routes (src/routes/orders.ts) with proper auth and RBAC
+- [x] Update app.ts to register order routes
+- [ ] Test the implementation
