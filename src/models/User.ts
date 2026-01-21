@@ -8,12 +8,13 @@ export interface IUser {
   email: string;
   password: string;
   role: 'admin' | 'vendor' | 'customer';
+  profilePicture?: string;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema({
   _id: {
     type: String,
     default: uuidv4,

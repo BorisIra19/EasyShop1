@@ -20,7 +20,7 @@ export interface IOrder {
   updatedAt: Date;
 }
 
-const orderItemSchema = new Schema<IOrderItem>({
+const orderItemSchema = new Schema({
   _id: {
     type: String,
     default: uuidv4,
@@ -51,7 +51,7 @@ const orderItemSchema = new Schema<IOrderItem>({
   },
 });
 
-const orderSchema = new Schema<IOrder>({
+const orderSchema = new Schema({
   _id: {
     type: String,
     default: uuidv4,
@@ -80,4 +80,4 @@ orderSchema.index({ userId: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ createdAt: -1 });
 
-export default mongoose.model<IOrder>('Order', orderSchema);
+export default mongoose.model('Order', orderSchema);
