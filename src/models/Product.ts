@@ -10,11 +10,12 @@ export interface IProduct {
   inStock: boolean;
   quantity: number;
   vendorId: string;
+  images?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-const productSchema = new Schema<IProduct>({
+const productSchema = new Schema({
   _id: {
     type: String,
     default: uuidv4,
@@ -59,5 +60,6 @@ const productSchema = new Schema<IProduct>({
 productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ categoryId: 1 });
 productSchema.index({ vendorId: 1 });
+productSchema.index({ name: 1 }, { unique: true });
 
 export default mongoose.model<IProduct>('Product', productSchema);

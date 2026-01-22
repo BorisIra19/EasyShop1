@@ -7,7 +7,10 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "nodemon --exec ts-node src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed:users": "ts-node scripts/seedUsers.ts",
+    "seed:products": "ts-node scripts/seedProducts.ts",
+    "seed:reviews": "ts-node scripts/seedReviews.ts"
   },
   "keywords": [
     "api",
@@ -49,7 +52,8 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^9.0.7",
-    "ts-node": "^1.7.1",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
 }

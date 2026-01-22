@@ -15,7 +15,7 @@ const users_1 = __importDefault(require("./routes/users"));
 const categories_1 = __importDefault(require("./routes/categories"));
 const products_1 = __importDefault(require("./routes/products"));
 const cart_1 = __importDefault(require("./routes/cart"));
-const orders_1 = __importDefault(require("./routes/orders"));
+const orders_1 = require("./routes/orders");
 const errorHandler_1 = require("./middlewares/errorHandler");
 const app = (0, express_1.default)();
 // Swagger configuration
@@ -323,7 +323,8 @@ app.use('/api/users', users_1.default);
 app.use('/api/categories', categories_1.default);
 app.use('/api/products', products_1.default);
 app.use('/api/cart', cart_1.default);
-app.use('/api/orders', orders_1.default);
+app.use('/api/orders', orders_1.customerRouter);
+app.use('/api/admin/orders', orders_1.adminRouter);
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });

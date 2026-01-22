@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = void 0;
+exports.uploadProfilePicture = exports.deleteUser = exports.updateUser = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const updateUser = async (req, res) => {
     try {
@@ -45,4 +45,23 @@ const deleteUser = async (req, res) => {
     }
 };
 exports.deleteUser = deleteUser;
+// Upload profile picture
+const uploadProfilePicture = async (req, res) => {
+    try {
+        const userId = req.user?._id;
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        const profilePictureUrl = req.file.path;
+        await User_1.default.findByIdAndUpdate(userId, { profilePicture: profilePictureUrl });
+        res.json({
+            message: 'Profile picture uploaded successfully',
+            profilePicture: profilePictureUrl,
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+exports.uploadProfilePicture = uploadProfilePicture;
 //# sourceMappingURL=user.js.map

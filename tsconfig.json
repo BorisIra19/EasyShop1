@@ -18,6 +18,12 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node"
   },
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

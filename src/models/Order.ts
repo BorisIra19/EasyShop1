@@ -1,8 +1,7 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IOrderItem {
-  _id: string;
   productId: string;
   productName: string;
   productPrice: number;
@@ -16,57 +15,27 @@ export interface IOrder {
   items: IOrderItem[];
   totalPrice: number;
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-const orderItemSchema = new Schema({
-  _id: {
-    type: String,
-    default: uuidv4,
+const orderSchema = new mongoose.Schema({
+  _id: { type: String, default: () => uuidv4() },
+  userId: { type: String, required: true, ref: 'User' },
+  items: {
+    type: [
+      {
+        productId: { type: String, required: true, ref: 'Product' },
+        productName: { type: String, required: true },
+        productPrice: { type: Number, required: true, min: 0 },
+        quantity: { type: Number, required: true, min: 1 },
+        totalPrice: { type: Number, required: true, min: 0 },
+        _id: false,
+      },
+    ],
+    default: [],
   },
-  productId: {
-    type: String,
-    required: true,
-    ref: 'Product',
-  },
-  productName: {
-    type: String,
-    required: true,
-  },
-  productPrice: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1,
-  },
-  totalPrice: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-});
-
-const orderSchema = new Schema({
-  _id: {
-    type: String,
-    default: uuidv4,
-  },
-  userId: {
-    type: String,
-    required: true,
-    ref: 'User',
-  },
-  items: [orderItemSchema],
-  totalPrice: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
+  totalPrice: { type: Number, required: true, min: 0 },
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],

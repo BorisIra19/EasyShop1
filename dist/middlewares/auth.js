@@ -10,18 +10,29 @@ const authenticate = async (req, res, next) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
         if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
+            return res.status(401).json({ success: false, message: 'No token provided' });
         }
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        // Verify token with proper error handling
+        let decoded;
+        try {
+            decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'your_super_secret_jwt_key_here');
+        }
+        catch (jwtError) {
+            if (jwtError.name === 'TokenExpiredError') {
+                return res.status(401).json({ success: false, message: 'Token expired' });
+            }
+            return res.status(401).json({ success: false, message: 'Invalid token' });
+        }
         const user = await User_1.default.findById(decoded.userId);
         if (!user) {
-            return res.status(401).json({ message: 'Invalid token' });
+            return res.status(401).json({ success: false, message: 'User not found' });
         }
         req.user = user;
         next();
     }
     catch (error) {
-        res.status(401).json({ message: 'Invalid token' });
+        console.error('Authentication error:', error);
+        res.status(401).json({ success: false, message: 'Authentication failed' });
     }
 };
 exports.authenticate = authenticate;

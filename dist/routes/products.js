@@ -8,6 +8,7 @@ const product_1 = require("../controllers/product");
 const auth_1 = require("../middlewares/auth");
 const rbac_1 = require("../middlewares/rbac");
 const validation_1 = require("../middlewares/validation");
+const upload_1 = require("../middlewares/upload");
 const joi_1 = __importDefault(require("joi"));
 const router = express_1.default.Router();
 /**
@@ -262,5 +263,283 @@ router.put('/:id', auth_1.authenticate, rbac_1.requireVendor, (0, validation_1.v
  *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', auth_1.authenticate, rbac_1.requireVendor, product_1.deleteProduct);
+/**
+ * @swagger
+ * /api/products/{id}/images:
+ *   post:
+ *     summary: Upload product images
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Product image files (images only, max 1MB each, max 5 images)
+ *     responses:
+ *       200:
+ *         description: Product images uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 images:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         description: Invalid files or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Forbidden - Vendor/Admin access required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Product not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/:id/images', auth_1.authenticate, rbac_1.requireVendor, upload_1.uploadProductImages, product_1.uploadProductImages);
+/**
+ * @swagger
+ * /api/products/{id}/images:
+ *   delete:
+ *     summary: Delete product image
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - imageUrl
+ *             properties:
+ *               imageUrl:
+ *                 type: string
+ *                 description: URL of the image to delete
+ *     responses:
+ *       200:
+ *         description: Product image deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 images:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         description: Image URL required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Forbidden - Vendor/Admin access required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Product or image not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.delete('/:id/images', auth_1.authenticate, rbac_1.requireVendor, product_1.deleteProductImage);
+/**
+ * @swagger
+ * /api/products/stats:
+ *   get:
+ *     summary: Get product statistics by category
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Product statistics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   category:
+ *                     type: string
+ *                   totalProducts:
+ *                     type: integer
+ *                   avgPrice:
+ *                     type: number
+ *                   minPrice:
+ *                     type: number
+ *                   maxPrice:
+ *                     type: number
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/stats', product_1.getProductStats);
+/**
+ * @swagger
+ * /api/products/top:
+ *   get:
+ *     summary: Get top expensive products
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of products to return
+ *     responses:
+ *       200:
+ *         description: Top products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/top', product_1.getTopProducts);
+/**
+ * @swagger
+ * /api/products/low-stock:
+ *   get:
+ *     summary: Get low stock products
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: threshold
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Stock threshold
+ *     responses:
+ *       200:
+ *         description: Low stock products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/low-stock', product_1.getLowStockProducts);
+/**
+ * @swagger
+ * /api/products/price-distribution:
+ *   get:
+ *     summary: Get price distribution of products
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Price distribution retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   count:
+ *                     type: integer
+ *                   products:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                         price:
+ *                           type: number
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/price-distribution', product_1.getPriceDistribution);
 exports.default = router;
 //# sourceMappingURL=products.js.map
