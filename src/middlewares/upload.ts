@@ -1,10 +1,24 @@
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
+
+// Ensure upload directories exist
+const ensureUploadDir = (dirPath: string) => {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+};
+
+// Create upload directories
+ensureUploadDir('uploads/profiles');
+ensureUploadDir('uploads/products');
 
 // Local storage for profile pictures
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/profiles/');
+    const dir = 'uploads/profiles/';
+    ensureUploadDir(dir);
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -15,7 +29,9 @@ const profileStorage = multer.diskStorage({
 // Local storage for product images
 const productStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/products/');
+    const dir = 'uploads/products/';
+    ensureUploadDir(dir);
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -45,8 +61,6 @@ export const uploadProductImages = multer({
   limits: { fileSize: 1024 * 1024 }, // 1MB per file
   fileFilter: imageFilter,
 }).array('images', 5); // Max 5 images
-
-import fs from 'fs';
 
 // Delete image from local storage
 export const deleteImage = async (filePath: string) => {

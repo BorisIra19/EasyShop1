@@ -75,11 +75,18 @@ export const verifyEmailConfig = async () => {
       return false;
     }
 
-    await transporter.verify();
+    // Add timeout to prevent hanging
+    const verifyPromise = transporter.verify();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Email verification timeout')), 5000)
+    );
+
+    await Promise.race([verifyPromise, timeoutPromise]);
     console.log('✓ Email service configured and verified');
     return true;
   } catch (error: any) {
-    console.error('✗ Email verification failed:', error.message);
+    console.warn('⚠️  Email verification failed or timeout:', error.message);
+    console.warn('⚠️  App will continue without email service');
     return false;
   }
 };
